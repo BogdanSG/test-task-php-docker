@@ -1,6 +1,4 @@
-# test-task-php-docker
+### Run
 
-# Run:
-
-docker-compose build
-docker-compose up
+- docker-compose build
+- docker-compose up
