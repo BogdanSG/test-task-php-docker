@@ -1,5 +1,6 @@
 {
     "require": {
-        "fguillot/json-rpc": "^1.2"
+        "fguillot/json-rpc": "^1.2",
+        "phalcon/devtools": "^3.4"
     }
 }

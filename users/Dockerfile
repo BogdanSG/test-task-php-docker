@@ -1,11 +1,13 @@
 FROM alpine:3.10
 
-RUN apk --no-cache add php7 php7-fpm php7-json php7-curl php7-pdo php7-sqlite3 \
-    php7-mbstring nginx supervisor curl sqlite
+ENV dir /var/www/users
 
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-COPY ./conf/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
-COPY ./conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN apk --no-cache add php7 php7-fpm php7-json php7-curl php7-pdo php7-pdo_sqlite php7-sqlite3 \
+    php7-mbstring php7-phalcon nginx supervisor curl sqlite
+
+COPY ./app/config/nginx.conf /etc/nginx/nginx.conf
+COPY ./app/config/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
+COPY ./app/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN chown -R nobody.nobody /run && \
     chown -R nobody.nobody /var/lib/nginx && \
@@ -13,13 +15,13 @@ RUN chown -R nobody.nobody /run && \
     chown -R nobody.nobody /var/log/nginx && \
     chown -R nobody.nobody /home
 
-RUN mkdir -p /var/www/users
+RUN mkdir -p $dir
 
 USER nobody
 
-WORKDIR /var/www/users
-COPY --chown=nobody ./ /var/www/users/
+WORKDIR $dir
+COPY --chown=nobody ./ $dir
 
 EXPOSE 8080
 
-CMD php /var/www/users/migration/migration.php && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+CMD php ./vendor/phalcon/devtools/phalcon migration run && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
